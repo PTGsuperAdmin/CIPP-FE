@@ -1,0 +1,42 @@
+name: Deploy CIPP
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy-static-web-app:
+    runs-on: ubuntu-latest
+    name: Deploy Static Web App
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Deploy to Azure Static Web Apps
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }} # Used for GitHub integrations (e.g., PR comments)
+          action: "upload"
+          app_location: "/" # Path to your app source code
+          output_location: "build" # Path to your build output
+
+  build-and-deploy-function-app:
+    runs-on: ubuntu-latest
+    name: Deploy Azure Function App
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js (if needed for Functions)
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+
+      - name: Deploy to Azure Function App
+        uses: azure/functions-action@v1
+        with:
+          app-name: ptgcipp7lrlg
+          package: '.'
+          publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
