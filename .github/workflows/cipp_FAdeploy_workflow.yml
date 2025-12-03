@@ -1,0 +1,29 @@
+
+name: Deploy CIPP Function App
+
+on:
+  push:
+    branches:
+      - main  # Change if your branch is different
+
+jobs:
+  deploy-function-app:
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Login to Azure using Service Principal credentials
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      # Deploy to Azure Function App
+      - name: Deploy to Azure Function App
+        uses: azure/functions-action@v1
+        with:
+          app-name: ptgcipp7lrlg  # Replace with your Function App name
+          package: '.'                     # Path to your function code
+          publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
